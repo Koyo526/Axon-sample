@@ -110,23 +110,23 @@ Phase 2 以降（環境構築・コード実装・動作確認）は別タスク
 
 ### Phase 3: コード実装
 
-- [ ] **Step 5: Command クラスの実装**
+- [x] **Step 5: Command クラスの実装**
   - `CreateOrderCommand.java` を作成
 
-- [ ] **Step 6: Event クラスの実装**
+- [x] **Step 6: Event クラスの実装**
   - `OrderCreatedEvent.java` を作成
 
-- [ ] **Step 7: Aggregate クラスの実装**
+- [x] **Step 7: Aggregate クラスの実装**
   - `OrderAggregate.java` を作成
 
-- [ ] **Step 8: Controller クラスの実装**
+- [x] **Step 8: Controller クラスの実装**
   - `OrderCommandController.java` を作成
 
 ### Phase 4: 動作確認
 
-- [ ] **Step 9: ビルド・起動確認**
+- [x] **Step 9: ビルド・起動確認**
   - アプリケーションが正常にビルド・起動することを確認
 
-- [ ] **Step 10: API 動作確認**
+- [x] **Step 10: API 動作確認**
   - `POST /orders` の curl による動作確認
   - ログ出力から Command → Event → 状態更新の流れを確認

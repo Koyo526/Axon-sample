@@ -20,7 +20,9 @@ repositories {
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
-	implementation("org.axonframework:axon-spring-boot-starter:4.10.3")
+	implementation("org.axonframework:axon-spring-boot-starter:4.10.3") {
+		exclude(group = "org.axonframework", module = "axon-server-connector")
+	}
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

@@ -22,6 +22,8 @@
 src/main/java/
 └── com/example/axonlevelone/
     ├── AxonLevelOneApplication.java          ... Spring Boot メインクラス
+    ├── config/
+    │   └── AxonConfig.java                   ... Axon 設定（InMemoryEventStorageEngine）
     └── order/
         ├── command/
         │   └── CreateOrderCommand.java       ... Command メッセージ
@@ -275,9 +277,12 @@ repositories {
 
 dependencies {
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.axonframework:axon-spring-boot-starter:4.10.3")
+    implementation("org.axonframework:axon-spring-boot-starter:4.10.3") {
+        exclude(group = "org.axonframework", module = "axon-server-connector")
+    }
 
     testImplementation("org.springframework.boot:spring-boot-starter-test")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 tasks.withType<Test> {
@@ -290,33 +295,50 @@ tasks.withType<Test> {
 | 依存 | 目的 |
 |------|------|
 | `spring-boot-starter-web` | REST API（`@RestController`, `@PostMapping` 等） |
-| `axon-spring-boot-starter:4.10.3` | Axon Framework 本体 + Spring Boot 自動構成。CommandBus, EventBus, EventStore 等が自動設定される |
-| `spring-boot-starter-test` | テスト用（本サンプルでは使用しないが、Spring Initializr のデフォルトとして残す） |
+| `axon-spring-boot-starter:4.10.3` | Axon Framework 本体 + Spring Boot 自動構成。CommandBus, EventBus 等が自動設定される。`axon-server-connector` は除外する |
+| `spring-boot-starter-test` | テスト用（Spring Initializr のデフォルトとして残す） |
 
 > `axon-spring-boot-starter` は推移的依存により以下を含む:
 > - `axon-configuration` — Axon の自動構成
 > - `axon-eventsourcing` — Event Sourcing サポート
 > - `axon-spring` — Spring 統合
-> - `axon-server-connector` — Axon Server 接続（設定で無効化する）
+>
+> 注: `axon-server-connector` は除外する。Axon Server を使用しないため、クラスパスから取り除くことで
+> 不要な接続試行を防ぐ。代わりに `AxonConfig` で `InMemoryEventStorageEngine` を明示的に登録する。
 
 ---
 
 ## 6. 設定ファイル
 
-### 6.1 application.yml
+### 6.1 AxonConfig.java
 
-```yaml
-axon:
-  axonserver:
-    enabled: false
+`axon-server-connector` を除外した状態では、Event Store が自動構成されないため、
+`InMemoryEventStorageEngine` を明示的に Bean 登録する。
+
+```java
+@Configuration
+public class AxonConfig {
+
+    @Bean
+    public InMemoryEventStorageEngine eventStorageEngine() {
+        return new InMemoryEventStorageEngine();
+    }
+}
 ```
 
-| 設定 | 値 | 説明 |
-|------|-----|------|
-| `axon.axonserver.enabled` | `false` | Axon Server への接続を無効化し、インメモリ Event Store を使用する |
-
-> この1行の設定により、外部サービスなしで Axon Framework を動作させることができる。
+> この設定により、外部サービスなしで Axon Framework を動作させることができる。
 > Event Store はインメモリとなり、アプリケーション再起動時にデータは消失する。
+
+### 6.2 application.yml
+
+```yaml
+spring:
+  application:
+    name: AxonLevelOne
+```
+
+> Axon 固有の設定は不要。`axon-server-connector` を除外済みのため、
+> `axon.axonserver.enabled: false` も不要。
 
 ---
 
@@ -325,3 +347,4 @@ axon:
 | 日付 | 内容 |
 |------|------|
 | 2026-02-07 | 初版作成（plan.md セクション 7〜10 + 依存関係・設定・フロー図を補完） |
+| 2026-02-07 | axon-server-connector 除外 + AxonConfig（InMemoryEventStorageEngine）追加に伴い更新 |
