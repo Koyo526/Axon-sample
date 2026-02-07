@@ -23,7 +23,7 @@ public class OrderAggregate {
 
     @CommandHandler
     public OrderAggregate(CreateOrderCommand command) {
-        log.info("Handling CreateOrderCommand: orderId={}, productName={}",
+        log.info("[3] Command received, publishing OrderCreatedEvent: orderId={}, productName={}",
                 command.getOrderId(), command.getProductName());
         AggregateLifecycle.apply(OrderCreatedEvent.of(
                 command.getOrderId(), command.getProductName()));
@@ -31,9 +31,9 @@ public class OrderAggregate {
 
     @EventSourcingHandler
     public void on(OrderCreatedEvent event) {
-        log.info("Applying OrderCreatedEvent: orderId={}, productName={}",
-                event.getOrderId(), event.getProductName());
         this.orderId = event.getOrderId();
         this.productName = event.getProductName();
+        log.info("[4] Event applied, aggregate state updated: orderId={}, productName={}",
+                this.orderId, this.productName);
     }
 }

@@ -102,11 +102,15 @@ curl -X POST http://localhost:8080/orders \
 
 #### 期待するログ出力
 
-アプリケーションのコンソールに以下が出力されます。
+アプリケーションのコンソールに以下の5行が順番に出力されます。
+Command → Event → 状態更新の流れを番号付きで追うことができます。
 
 ```
-INFO  c.e.a.order.aggregate.OrderAggregate : Handling CreateOrderCommand: orderId=..., productName=Coffee
-INFO  c.e.a.order.aggregate.OrderAggregate : Applying OrderCreatedEvent: orderId=..., productName=Coffee
+INFO  c.e.a.o.c.OrderCommandController : [1] Received POST /orders: productName=Coffee
+INFO  c.e.a.o.c.OrderCommandController : [2] Sending CreateOrderCommand: orderId=...
+INFO  c.e.a.order.aggregate.OrderAggregate : [3] Command received, publishing OrderCreatedEvent: orderId=..., productName=Coffee
+INFO  c.e.a.order.aggregate.OrderAggregate : [4] Event applied, aggregate state updated: orderId=..., productName=Coffee
+INFO  c.e.a.o.c.OrderCommandController : [5] Order created successfully: orderId=..., status=CREATED
 ```
 
 ## ドキュメント
