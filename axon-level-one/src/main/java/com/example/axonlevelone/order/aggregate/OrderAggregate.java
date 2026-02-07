@@ -25,7 +25,7 @@ public class OrderAggregate {
     public OrderAggregate(CreateOrderCommand command) {
         log.info("Handling CreateOrderCommand: orderId={}, productName={}",
                 command.getOrderId(), command.getProductName());
-        AggregateLifecycle.apply(new OrderCreatedEvent(
+        AggregateLifecycle.apply(OrderCreatedEvent.of(
                 command.getOrderId(), command.getProductName()));
     }
 

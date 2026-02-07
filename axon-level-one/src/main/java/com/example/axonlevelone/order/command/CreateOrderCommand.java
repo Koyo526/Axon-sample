@@ -8,9 +8,13 @@ public class CreateOrderCommand {
     private final String orderId;
     private final String productName;
 
-    public CreateOrderCommand(String orderId, String productName) {
+    private CreateOrderCommand(String orderId, String productName) {
         this.orderId = orderId;
         this.productName = productName;
+    }
+
+    public static CreateOrderCommand of(String orderId, String productName) {
+        return new CreateOrderCommand(orderId, productName);
     }
 
     public String getOrderId() {

@@ -5,9 +5,13 @@ public class OrderCreatedEvent {
     private final String orderId;
     private final String productName;
 
-    public OrderCreatedEvent(String orderId, String productName) {
+    private OrderCreatedEvent(String orderId, String productName) {
         this.orderId = orderId;
         this.productName = productName;
+    }
+
+    public static OrderCreatedEvent of(String orderId, String productName) {
+        return new OrderCreatedEvent(orderId, productName);
     }
 
     public String getOrderId() {
