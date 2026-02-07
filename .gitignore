@@ -13,10 +13,6 @@ replay_pid*
 
 # ===== Gradle =====
 .gradle/
-!gradle/wrapper/gradle-wrapper.jar
-
-# ===== Maven =====
-!.mvn/wrapper/maven-wrapper.jar
 
 # ===== IDE - IntelliJ IDEA =====
 .idea/
@@ -24,10 +20,11 @@ replay_pid*
 *.iws
 *.ipr
 
-# ===== IDE - Eclipse =====
+# ===== IDE - Eclipse / STS =====
 .classpath
 .project
 .settings/
+.factorypath
 
 # ===== IDE - VS Code =====
 .vscode/
