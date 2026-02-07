@@ -30,21 +30,35 @@ axon-level-one/src/main/java/com/example/axonlevelone/
     │   └── OrderCreatedEvent.java            ... 「注文が作成された」という事実
     ├── aggregate/
     │   └── OrderAggregate.java               ... 整合性境界（Command 処理 + Event 発行）
+    ├── query/
+    │   └── GetOrdersQuery.java              ... 「注文一覧を取得したい」というクエリ
+    ├── projection/
+    │   └── OrderProjection.java             ... Query Model（Event → 読み取りモデル構築）
     └── controller/
-        ├── OrderCommandController.java       ... REST API エンドポイント
+        ├── OrderCommandController.java       ... Command 用 REST API（POST）
+        ├── OrderQueryController.java         ... Query 用 REST API（GET）
         └── dto/
             ├── CreateOrderRequest.java       ... リクエストボディ（record）
             ├── CreateOrderResponse.java      ... レスポンスボディ（record）
+            ├── OrderSummary.java             ... 注文一覧レスポンス（record）
             └── OrderStatus.java              ... ステータス（enum）
 ```
 
 ### 処理フロー
 
+#### Command 側（書き込み）
 ```
 POST /orders  →  Controller  →  CommandGateway  →  OrderAggregate
                                                       ├─ @CommandHandler（Command 処理）
                                                       ├─ apply(OrderCreatedEvent)
                                                       └─ @EventSourcingHandler（状態更新）
+```
+
+#### Query 側（読み取り）
+```
+GET /orders  →  Controller  →  QueryGateway  →  OrderProjection
+                                                   ├─ @EventHandler（Event 購読 → リスト蓄積）
+                                                   └─ @QueryHandler（クエリ応答）
 ```
 
 ## クイックスタート
@@ -99,6 +113,23 @@ curl -X POST http://localhost:8080/orders \
 ```
 
 > `orderId` は実行ごとに異なる UUID が返ります。
+
+#### 注文一覧取得
+
+```bash
+curl http://localhost:8080/orders
+```
+
+#### 期待するレスポンス（注文一覧）
+
+```json
+[
+  {
+    "orderId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "productName": "Coffee"
+  }
+]
+```
 
 #### 期待するログ出力
 
