@@ -24,7 +24,7 @@ plan.md の要件・仕様・設計をレビューした結果、以下の所見
 
 ### Q2: Spring Boot のバージョン
 [Question] Spring Boot 3.x 系とありますが、**3.2.x** または **3.3.x** など特定のバージョンの希望はありますか？（Java 17 以上の要件と整合します）
-[Answer] Spring Boot は 3.3.x をパッチまで固定し、Java は 21 (LTS) を前提とします。
+[Answer] Spring Boot は 3.5.x をパッチまで固定し、Java は 21 (LTS) を前提とします。
 
 ### Q3: ビルドツール
 [Question] ビルドツールは **Gradle（Kotlin DSL）** と **Maven** のどちらを使用しますか？入門書の読者層を考慮すると Maven のほうが馴染みがあるかもしれませんが、いかがでしょうか？
@@ -62,7 +62,7 @@ SLF4J Logger を使ったログ出力にします。
 | # | 項目 | 決定事項 |
 |---|------|----------|
 | Q1 | Axon Framework | 4.10.x（パッチまで固定） |
-| Q2 | Spring Boot / Java | Spring Boot 3.3.x / Java 21 (LTS) |
+| Q2 | Spring Boot / Java | Spring Boot 3.5.x / Java 21 (LTS) |
 | Q3 | ビルドツール | Gradle（Kotlin DSL） |
 | Q4 | バリデーション | 省略（なし） |
 | Q5 | Event Store | インメモリ（デフォルト、Axon Server 不要） |
