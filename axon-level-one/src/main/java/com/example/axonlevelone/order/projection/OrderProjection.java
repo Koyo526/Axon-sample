@@ -19,9 +19,9 @@ public class OrderProjection {
 
     @EventHandler
     public void on(OrderCreatedEvent event) {
-        OrderSummary orderSummary = OrderSummary.create(event.getOrderId(), event.getProductName());
+        OrderSummary orderSummary = OrderSummary.create(event.getOrderNumber(), event.getProductName());
         orders.add(orderSummary);
-        log.info("OrderCreatedEvent handled: orderId={}, productName={}", event.getOrderId(), event.getProductName());
+        log.info("OrderCreatedEvent handled: orderNumber={}, productName={}", event.getOrderNumber(), event.getProductName());
     }
 
     @QueryHandler

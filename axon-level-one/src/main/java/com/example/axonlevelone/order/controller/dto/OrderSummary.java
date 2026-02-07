@@ -1,7 +1,7 @@
 package com.example.axonlevelone.order.controller.dto;
 
-public record OrderSummary(String orderId, String productName) {
-    public static OrderSummary create(String orderId, String productName) {
-        return new OrderSummary(orderId, productName);
+public record OrderSummary(String orderNumber, String productName) {
+    public static OrderSummary create(String orderNumber, String productName) {
+        return new OrderSummary(orderNumber, productName);
     }
 }

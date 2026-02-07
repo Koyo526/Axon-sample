@@ -8,10 +8,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class OrderCreatedEvent {
 
-    private final String orderId;
+    private final String orderNumber;
     private final String productName;
 
-    public static OrderCreatedEvent of(String orderId, String productName) {
-        return new OrderCreatedEvent(orderId, productName);
+    public static OrderCreatedEvent of(String orderNumber, String productName) {
+        return new OrderCreatedEvent(orderNumber, productName);
     }
 }

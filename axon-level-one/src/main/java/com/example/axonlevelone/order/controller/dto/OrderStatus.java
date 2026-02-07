@@ -1,5 +1,6 @@
 package com.example.axonlevelone.order.controller.dto;
 
 public enum OrderStatus {
-    CREATED
+    CREATED,
+    ALREADY_PROCESSED
 }

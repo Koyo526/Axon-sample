@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 public class OrderAggregate {
 
     @AggregateIdentifier
-    private String orderId;
+    private String orderNumber;
     private String productName;
 
     protected OrderAggregate() {
@@ -23,17 +23,17 @@ public class OrderAggregate {
 
     @CommandHandler
     public OrderAggregate(CreateOrderCommand command) {
-        log.info("[3] Command received, publishing OrderCreatedEvent: orderId={}, productName={}",
-                command.getOrderId(), command.getProductName());
+        log.info("[3] Command received, publishing OrderCreatedEvent: orderNumber={}, productName={}",
+                command.getOrderNumber(), command.getProductName());
         AggregateLifecycle.apply(OrderCreatedEvent.of(
-                command.getOrderId(), command.getProductName()));
+                command.getOrderNumber(), command.getProductName()));
     }
 
     @EventSourcingHandler
     public void on(OrderCreatedEvent event) {
-        this.orderId = event.getOrderId();
+        this.orderNumber = event.getOrderNumber();
         this.productName = event.getProductName();
-        log.info("[4] Event applied, aggregate state updated: orderId={}, productName={}",
-                this.orderId, this.productName);
+        log.info("[4] Event applied, aggregate state updated: orderNumber={}, productName={}",
+                this.orderNumber, this.productName);
     }
 }

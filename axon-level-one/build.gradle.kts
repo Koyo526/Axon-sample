@@ -26,6 +26,7 @@ dependencies {
 		exclude(group = "org.axonframework", module = "axon-server-connector")
 	}
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
+	testImplementation("org.axonframework:axon-test:4.10.3")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 

@@ -100,19 +100,19 @@ Started AxonLevelOneApplication in X.XXX seconds
 ```bash
 curl -X POST http://localhost:8080/orders \
   -H "Content-Type: application/json" \
-  -d '{"productName": "Coffee"}'
+  -d '{"orderNumber": "ORD-001", "productName": "Coffee"}'
 ```
 
 #### 期待するレスポンス
 
 ```json
 {
-  "orderId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+  "orderNumber": "ORD-001",
   "status": "CREATED"
 }
 ```
 
-> `orderId` は実行ごとに異なる UUID が返ります。
+> HTTP ステータスコード: **201 Created**
 
 #### 注文一覧取得
 
@@ -125,7 +125,7 @@ curl http://localhost:8080/orders
 ```json
 [
   {
-    "orderId": "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
+    "orderNumber": "ORD-001",
     "productName": "Coffee"
   }
 ]
@@ -137,12 +137,35 @@ curl http://localhost:8080/orders
 Command → Event → 状態更新の流れを番号付きで追うことができます。
 
 ```
-INFO  c.e.a.o.c.OrderCommandController : [1] Received POST /orders: productName=Coffee
-INFO  c.e.a.o.c.OrderCommandController : [2] Sending CreateOrderCommand: orderId=...
-INFO  c.e.a.order.aggregate.OrderAggregate : [3] Command received, publishing OrderCreatedEvent: orderId=..., productName=Coffee
-INFO  c.e.a.order.aggregate.OrderAggregate : [4] Event applied, aggregate state updated: orderId=..., productName=Coffee
-INFO  c.e.a.o.c.OrderCommandController : [5] Order created successfully: orderId=..., status=CREATED
+INFO  c.e.a.o.c.OrderCommandController : [1] Received POST /orders: orderNumber=ORD-001, productName=Coffee
+INFO  c.e.a.o.c.OrderCommandController : [2] Sending CreateOrderCommand: orderNumber=ORD-001
+INFO  c.e.a.order.aggregate.OrderAggregate : [3] Command received, publishing OrderCreatedEvent: orderNumber=ORD-001, productName=Coffee
+INFO  c.e.a.order.aggregate.OrderAggregate : [4] Event applied, aggregate state updated: orderNumber=ORD-001, productName=Coffee
+INFO  c.e.a.o.c.OrderCommandController : [5] Order created successfully: orderNumber=ORD-001, status=CREATED
 ```
+
+### 重複検知の動作確認
+
+同じ `orderNumber` で再度リクエストを送ると、重複として検知されます。
+
+```bash
+curl -X POST http://localhost:8080/orders \
+  -H "Content-Type: application/json" \
+  -d '{"orderNumber": "ORD-001", "productName": "Coffee"}'
+```
+
+#### 期待するレスポンス
+
+```json
+{
+  "orderNumber": "ORD-001",
+  "status": "ALREADY_PROCESSED"
+}
+```
+
+> HTTP ステータスコード: **409 Conflict**
+
+Axon Framework は同じ `orderNumber`（Aggregate 識別子）を持つ Aggregate が既に存在する場合、2つ目の作成を自動的に拒否します。これにより、アプリケーション側で重複チェックのロジックを書かなくても、冪等な注文作成が実現できます。
 
 ## ドキュメント
 

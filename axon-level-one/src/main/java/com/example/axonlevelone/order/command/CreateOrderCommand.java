@@ -10,10 +10,10 @@ import org.axonframework.modelling.command.TargetAggregateIdentifier;
 public class CreateOrderCommand {
 
     @TargetAggregateIdentifier
-    private final String orderId;
+    private final String orderNumber;
     private final String productName;
 
-    public static CreateOrderCommand of(String orderId, String productName) {
-        return new CreateOrderCommand(orderId, productName);
+    public static CreateOrderCommand of(String orderNumber, String productName) {
+        return new CreateOrderCommand(orderNumber, productName);
     }
 }
