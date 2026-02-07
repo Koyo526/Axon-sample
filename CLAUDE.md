@@ -50,6 +50,14 @@ com.example.axonlevelone.order/
 - DB 永続化、Axon Server、認証認可、例外設計、Saga、Query Model
 - 本番向けの設計（分散・運用・監視・性能）
 
+## GitHub CLI（gh コマンド）
+
+- リモートリポジトリ: `Koyo526/Axon-sample`
+- `gh` コマンドは認証済みで使用可能
+- PR 作成・Issue 管理・リリース操作などに `gh` を使用する
+- `git push` 後の PR 作成は `gh pr create` で行う
+- ブランチ戦略: `main` をデフォルトブランチ、`develop` で開発を行う
+
 ## 言語
 
 ドキュメントおよびコミュニケーションはすべて日本語で行う。
