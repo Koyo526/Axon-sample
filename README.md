@@ -35,8 +35,7 @@ axon-level-one/src/main/java/com/example/axonlevelone/
     ├── projection/
     │   └── OrderProjection.java             ... Query Model（Event → 読み取りモデル構築）
     └── controller/
-        ├── OrderCommandController.java       ... Command 用 REST API（POST）
-        ├── OrderQueryController.java         ... Query 用 REST API（GET）
+        ├── OrderController.java              ... REST API（Command + Query）
         └── dto/
             ├── CreateOrderRequest.java       ... リクエストボディ（record）
             ├── CreateOrderResponse.java      ... レスポンスボディ（record）
@@ -48,7 +47,7 @@ axon-level-one/src/main/java/com/example/axonlevelone/
 
 #### Command 側（書き込み）
 ```
-POST /orders  →  Controller  →  CommandGateway  →  OrderAggregate
+POST /order  →  Controller  →  CommandGateway  →  OrderAggregate
                                                       ├─ @CommandHandler（Command 処理）
                                                       ├─ apply(OrderCreatedEvent)
                                                       └─ @EventSourcingHandler（状態更新）
@@ -98,7 +97,7 @@ Started AxonLevelOneApplication in X.XXX seconds
 #### 注文作成
 
 ```bash
-curl -X POST http://localhost:8080/orders \
+curl -X POST http://localhost:8080/order \
   -H "Content-Type: application/json" \
   -d '{"productName": "Coffee"}'
 ```
@@ -137,11 +136,11 @@ curl http://localhost:8080/orders
 Command → Event → 状態更新の流れを番号付きで追うことができます。
 
 ```
-INFO  c.e.a.o.c.OrderCommandController : [1] Received POST /orders: productName=Coffee
-INFO  c.e.a.o.c.OrderCommandController : [2] Sending CreateOrderCommand: orderId=...
+INFO  c.e.a.o.controller.OrderController : [1] Received POST /order: productName=Coffee
+INFO  c.e.a.o.controller.OrderController : [2] Sending CreateOrderCommand: orderId=...
 INFO  c.e.a.order.aggregate.OrderAggregate : [3] Command received, publishing OrderCreatedEvent: orderId=..., productName=Coffee
 INFO  c.e.a.order.aggregate.OrderAggregate : [4] Event applied, aggregate state updated: orderId=..., productName=Coffee
-INFO  c.e.a.o.c.OrderCommandController : [5] Order created successfully: orderId=..., status=CREATED
+INFO  c.e.a.o.controller.OrderController : [5] Order created successfully: orderId=..., status=CREATED
 ```
 
 ## ドキュメント

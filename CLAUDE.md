@@ -29,7 +29,9 @@ com.example.axonlevelone.order/
 ├── command/        # Command クラス（意図を表現）
 ├── event/          # Event クラス（発生した事実を表現、Immutable）
 ├── aggregate/      # Aggregate（整合性境界、Command受理 → Event発行）
-└── controller/     # REST Controller（HTTP → Command 変換のみ）
+├── query/          # Query クラス（問い合わせを表現）
+├── projection/     # Projection（Event → 読み取りモデル構築）
+└── controller/     # REST Controller（HTTP → Command/Query 変換）
 ```
 
 ### 設計原則
