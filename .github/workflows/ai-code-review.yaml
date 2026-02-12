@@ -74,7 +74,7 @@ jobs:
         with:
           claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
 
-          direct_prompt: |
+          prompt: |
             このリポジトリは技術同人誌『Axon Level ONE』の教育用サンプルコードです。
             CLAUDE.md に記載されたプロジェクトのルール・設計原則に従ってレビューしてください。
 
@@ -101,6 +101,7 @@ jobs:
             - Saga パターン
             - 本番向けの設計（分散・運用・監視・性能）
 
+          label_trigger: 'ai-review'
           claude_args: "--max-turns 10 --model claude-sonnet-4-5-20250929 --mcp-config '{}'"
           show_full_output: true
 
