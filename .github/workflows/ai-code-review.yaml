@@ -1,0 +1,115 @@
+# =============================================================
+# AI Code Review ワークフロー
+#
+# Claude Code Action を使用した PR の自動レビュー。
+# Axon Framework / CQRS / Event Sourcing の設計原則に基づいて
+# コードをレビューする。
+#
+# トリガー:
+#   - PR に `ai-review` ラベルを付与
+#   - PR コメント / レビューコメントで `@claude` をメンション
+#   - 手動実行（PR 番号を指定）
+# =============================================================
+
+name: AI Code Review
+
+on:
+  # PR に `ai-review` ラベルが付与された時
+  pull_request:
+    types: [labeled]
+
+  # PR コメントで `@claude` をメンションした時
+  issue_comment:
+    types: [created]
+
+  # レビューコメントで `@claude` をメンションした時
+  pull_request_review_comment:
+    types: [created]
+
+  # 手動実行（PR 番号を指定）
+  workflow_dispatch:
+    inputs:
+      pr_number:
+        description: 'レビュー対象の PR 番号'
+        required: true
+        type: number
+
+permissions:
+  contents: read
+  pull-requests: write
+  issues: write
+  id-token: write
+
+jobs:
+  review:
+    name: Claude Code Review
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    # 実行条件:
+    #   - labeled: `ai-review` ラベルが付与された時
+    #   - issue_comment: コメントに `@claude` を含み、かつ PR に紐づくコメントの時
+    #   - pull_request_review_comment: コメントに `@claude` を含む時
+    #   - workflow_dispatch: 常に実行
+    if: |
+      (github.event_name == 'pull_request' && github.event.label.name == 'ai-review') ||
+      (github.event_name == 'issue_comment' && contains(github.event.comment.body, '@claude') && github.event.issue.pull_request) ||
+      (github.event_name == 'pull_request_review_comment' && contains(github.event.comment.body, '@claude')) ||
+      github.event_name == 'workflow_dispatch'
+
+    steps:
+      # -------------------------------------------------------
+      # 1. ソースコードのチェックアウト（全履歴取得）
+      # -------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      # -------------------------------------------------------
+      # 2. Claude Code Action によるレビュー実行
+      # -------------------------------------------------------
+      - name: Run Claude Code Review
+        uses: anthropics/claude-code-action@v1
+        with:
+          claude_code_oauth_token: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+
+          direct_prompt: |
+            このリポジトリは技術同人誌『Axon Level ONE』の教育用サンプルコードです。
+            CLAUDE.md に記載されたプロジェクトのルール・設計原則に従ってレビューしてください。
+
+            ## レビュー観点
+
+            ### 1. Axon Framework パターン
+            - Command → Event → 状態更新のフローが正しいか
+            - @CommandHandler, @EventSourcingHandler, @EventHandler, @QueryHandler のアノテーションが適切に使い分けられているか
+            - Aggregate に引数なしコンストラクタが定義されているか（Axon によるイベントソーシング復元に必須）
+
+            ### 2. CQRS 設計原則
+            - Controller はビジネスロジックを持たず、HTTP リクエストから Command/Query への変換のみを行っているか
+            - 状態変更が @EventSourcingHandler 内でのみ行われているか（@CommandHandler で直接フィールドを変更していないか）
+
+            ### 3. 命名規約
+            - Command クラスは意図・動詞で命名されているか（例: PlaceOrderCommand）
+            - Event クラスは発生した事実・過去形で命名されているか（例: OrderPlacedEvent）
+
+            ### 4. スコープ外の事項（指摘不要）
+            以下は教育用サンプルとして意図的にスコープ外としているため、指摘しないでください:
+            - DB 永続化、Axon Server 接続
+            - 認証・認可
+            - 例外ハンドリングの網羅性
+            - Saga パターン
+            - 本番向けの設計（分散・運用・監視・性能）
+
+          claude_args: "--max-turns 10 --model claude-sonnet-4-5-20250929 --mcp-config '{}'"
+          show_full_output: true
+
+      # -------------------------------------------------------
+      # 3. ai-review ラベルの自動削除（再利用可能にするため）
+      # -------------------------------------------------------
+      - name: Remove ai-review label
+        if: github.event_name == 'pull_request' && github.event.label.name == 'ai-review'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: gh pr edit "$PR_NUMBER" --remove-label ai-review
