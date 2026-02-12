@@ -110,7 +110,6 @@ jobs:
             コード上の具体的な指摘がある場合は `mcp__github_inline_comment__create_inline_comment` でインラインコメントを追加してください。
             レビュー結果はメッセージとしてではなく、必ず GitHub コメントとして投稿してください。
 
-          track_progress: true
           label_trigger: 'ai-review'
           claude_args: |
             --max-turns 10
