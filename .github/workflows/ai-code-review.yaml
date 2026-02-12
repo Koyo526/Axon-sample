@@ -102,7 +102,7 @@ jobs:
             - 本番向けの設計（分散・運用・監視・性能）
 
           label_trigger: 'ai-review'
-          claude_args: "--max-turns 10 --model claude-sonnet-4-5-20250929 --mcp-config '{}'"
+          claude_args: "--max-turns 10 --model claude-sonnet-4-5-20250929"
           show_full_output: true
 
       # -------------------------------------------------------
