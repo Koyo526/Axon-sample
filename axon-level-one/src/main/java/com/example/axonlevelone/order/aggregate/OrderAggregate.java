@@ -1,5 +1,6 @@
 package com.example.axonlevelone.order.aggregate;
 
+import com.example.axonlevelone.order.OrderStatus;
 import com.example.axonlevelone.order.command.CreateOrderCommand;
 import com.example.axonlevelone.order.event.OrderCreatedEvent;
 import org.axonframework.commandhandling.CommandHandler;
@@ -16,6 +17,7 @@ public class OrderAggregate {
     @AggregateIdentifier
     private String orderId;
     private String productName;
+    private OrderStatus status;
 
     protected OrderAggregate() {
         // Axon による Event Sourcing 復元用（引数なしコンストラクタ）
@@ -23,8 +25,14 @@ public class OrderAggregate {
 
     @CommandHandler
     public OrderAggregate(CreateOrderCommand command) {
-        log.info("[3] Command received, publishing OrderCreatedEvent: orderId={}, productName={}",
+        log.info("[3] Command received: orderId={}, productName={}",
                 command.getOrderId(), command.getProductName());
+
+        if (command.getProductName() == null || command.getProductName().isBlank()) {
+            throw new IllegalArgumentException("商品名は必須です");
+        }
+
+        log.info("[3] Publishing OrderCreatedEvent");
         AggregateLifecycle.apply(OrderCreatedEvent.of(
                 command.getOrderId(), command.getProductName()));
     }
@@ -33,7 +41,8 @@ public class OrderAggregate {
     public void on(OrderCreatedEvent event) {
         this.orderId = event.getOrderId();
         this.productName = event.getProductName();
-        log.info("[4] Event applied, aggregate state updated: orderId={}, productName={}",
-                this.orderId, this.productName);
+        this.status = OrderStatus.CREATED;
+        log.info("[4] Event applied, aggregate state updated: orderId={}, productName={}, status={}",
+                this.orderId, this.productName, this.status);
     }
 }
